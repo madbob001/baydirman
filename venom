@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spider Animation</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    #search-container {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    #search-input {
+      width: 300px;
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Search Bar -->
+  <div id="search-container">
+    <input type="text" id="search-input" placeholder="Search something...">
+  </div>
+
+  <!-- Canvas for Animation -->
+  <script>
+    const canvas = document.createElement("canvas");
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
+
+    class Spider {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.speed = 0.05;
+      }
+
+      follow(mouseX, mouseY) {
+        this.x += (mouseX - this.x) * this.speed;
+        this.y += (mouseY - this.y) * this.speed;
+      }
+
+      tick() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Initialize spiders
+    const spiders = Array.from({ length: 2 }, () => new Spider(w / 2, h / 2));
+
+    // Track mouse movement
+    addEventListener("pointermove", (e) => {
+      spiders.forEach((spider) => {
+        spider.follow(e.clientX, e.clientY);
+      });
+    });
+
+    // Animation loop
+    function anim() {
+      if (w !== innerWidth || h !== innerHeight) {
+        w = canvas.width = innerWidth;
+        h = canvas.height = innerHeight;
+      }
+
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.fillStyle = "#fff";
+      spiders.forEach((spider) => spider.tick());
+
+      requestAnimationFrame(anim);
+    }
+
+    anim();
+  </script>
+</body>
+</html>
